@@ -12,14 +12,18 @@ var connection = mySql.createConnection({
     database: "bamazon"
 })
 
+connection.connect(function(err){
+    inquirerFunc();
+});
 
-inquirer
+function inquirerFunc(){
+    inquirer
   .prompt([
       {
         type: "list",
         name: "idCheck",
         message: "Which product (id) would you like to purchase?",
-        choices: [1,2,3,4,5,6,7,8,9,10],
+        choices: ["1","2","3","4","5","6","7","8","9","10"],
         default: 0
       },
       {
@@ -30,7 +34,7 @@ inquirer
       }
   ])
   .then(answers => {
-    connection.connect(function(err){
+    // connection.connect(function(err){
         var tempQuant = 0;
         
     
@@ -39,18 +43,25 @@ inquirer
             // if(err) throw err;
             // console.log(res);
             tempQuant = res[0].stock_quantity;
-            console.log(tempQuant)
-        })
-        if(answers.quantity > tempQuant){
-            connection.query("UPDATE products SET stock_quantity = stock_quantity - ? WHERE stock_quantity > ? AND id = ?", answers.quantity, answers.quantity, answers.idCheck, function(err, res){
-                if(err) throw err;
-                console.log(res);
+           
+            parseInt(answers.idCheck);
+        
+        // console.log(answers.quantity)
+        // console.log(tempQuant)
+        if(answers.quantity < tempQuant){
+            connection.query("UPDATE products SET stock_quantity = stock_quantity - ? WHERE stock_quantity > ? AND id = ?", [answers.quantity, answers.quantity, answers.idCheck], function(err, res){
+                // console.log(res);
+                // console.log(res);
+                connection.query("SELECT * FROM products WHERE id = ?", answers.idCheck, function(err, res){
+                    console.log(res[0].stock_quantity);
+                })
             })
         } else {
             console.log("Sorry! There isn't enough quantity in stock.")
         }
-        // connection.end();
     })
+        // connection.end();
+    // })
   })
   .catch(error => {
     if(error.isTtyError) {
@@ -60,3 +71,4 @@ inquirer
       console.log("Something else is wrong")
     }
   });
+}
