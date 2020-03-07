@@ -42,6 +42,7 @@ function inquirerFunc(){
         connection.query("SELECT * FROM products WHERE id = ?", answers.idCheck, function(err, res){
             // if(err) throw err;
             // console.log(res);
+            console.log(`There was ${res[0].stock_quantity} of ${res[0].product_name} currently!`)
             tempQuant = res[0].stock_quantity;
            
             parseInt(answers.idCheck);
@@ -53,11 +54,14 @@ function inquirerFunc(){
                 // console.log(res);
                 // console.log(res);
                 connection.query("SELECT * FROM products WHERE id = ?", answers.idCheck, function(err, res){
-                    console.log(res[0].stock_quantity);
+                    console.log(`There are now ${res[0].stock_quantity} left of ${res[0].product_name}`);
+                    console.log("Thank you!")
                 })
+                connection.end();
             })
         } else {
-            console.log("Sorry! There isn't enough quantity in stock.")
+            console.log("Sorry! There isn't enough quantity in stock.");
+            connection.end();
         }
     })
         // connection.end();
